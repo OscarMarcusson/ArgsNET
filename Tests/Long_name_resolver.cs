@@ -8,7 +8,7 @@ using PrettyArgs;
 namespace Tests
 {
 	[TestClass]
-	public class Name_resolver
+	public class Long_name_resolver
 	{
 		[TestMethod]
 		[DataRow("example", "--example")]

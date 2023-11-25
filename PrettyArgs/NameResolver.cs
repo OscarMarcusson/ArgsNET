@@ -8,6 +8,27 @@ namespace PrettyArgs
 {
 	internal static class NameResolver
 	{
+		public static string ResolveShortNameFromLongName(string name)
+		{
+			var builder = new StringBuilder(6);
+			builder.Append('-');
+			var previous = '-';
+			for(int i = 0; i < name.Length; i++)
+			{
+				if (name[i] == '-')
+				{
+					previous = '-';
+				}
+				else
+				{
+					if (previous == '-')
+						builder.Append(name[i]);
+					previous = name[i];
+				}
+			}
+			return builder.ToString();
+		}
+
 		public static string ResolveLongNameFromVariableName(string name)
 		{
 			var output = new StringBuilder(name.Length + 6);
