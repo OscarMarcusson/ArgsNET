@@ -9,7 +9,7 @@ namespace Tests
 		public void Empty_input_does_nothing()
 		{
 			var args = Array.Empty<string>();
-			_ = Arguments.Parse<Empty>(args, out var errors);
+			_ = Deserialize.Arguments(args).To<Empty>(out var errors);
 			Assert.AreEqual("", errors, "Did not expect any parse errors");
 		}
 
@@ -20,7 +20,7 @@ namespace Tests
 		[DataRow("--verbose-help")]
 		public void Flags_return_error(params string[] args)
 		{
-			_ = Arguments.Parse<Empty>(args, out var errors);
+			_ = Deserialize.Arguments(args).To<Empty>(out var errors);
 			Assert.IsTrue(errors.Length > 0, "Expected an error");
 			Assert.IsTrue(errors.Contains("not found", StringComparison.OrdinalIgnoreCase));
 		}
@@ -32,7 +32,7 @@ namespace Tests
 		[DataRow("--verbose-output=test")]
 		public void Options_return_error(params string[] args)
 		{
-			_ = Arguments.Parse<Empty>(args, out var errors);
+			_ = Deserialize.Arguments(args).To<Empty>(out var errors);
 			Assert.IsTrue(errors.Length > 0, "Expected an error");
 			Assert.IsTrue(errors.Contains("not found", StringComparison.OrdinalIgnoreCase));
 		}

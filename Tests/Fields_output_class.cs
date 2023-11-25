@@ -9,7 +9,7 @@ namespace Tests
 		public void Empty_input_does_nothing()
 		{
 			var args = Array.Empty<string>();
-			var output = Arguments.Parse<Output>(args, out var errors);
+			var output = Deserialize.Arguments(args).To<Output>(out var errors);
 			Assert.AreEqual("", errors, "Did not expect any parse errors");
 			Assert.IsNull(output.output);
 			Assert.IsFalse(output.version);
@@ -22,7 +22,7 @@ namespace Tests
 		[DataRow("--version")]
 		public void Flags_are_set_to_true(params string[] args)
 		{
-			var output = Arguments.Parse<Output>(args, out var errors);
+			var output = Deserialize.Arguments(args).To<Output>(out var errors);
 			Assert.AreEqual("", errors, "Did not expect any parse errors");
 			Assert.IsNull(output.output);
 			Assert.IsTrue(output.version);
@@ -38,7 +38,7 @@ namespace Tests
 		[DataRow("--output=test")]
 		public void Options_strings_are_set(params string[] args)
 		{
-			var output = Arguments.Parse<Output>(args, out var errors);
+			var output = Deserialize.Arguments(args).To<Output>(out var errors);
 			Assert.AreEqual("", errors, "Did not expect any parse errors");
 			Assert.AreEqual("test", output.output);
 			Assert.IsFalse(output.version);
@@ -55,7 +55,7 @@ namespace Tests
 				"--age", "42",
 				"--money", "10.00000001"
 			};
-			var output = Arguments.Parse<Output>(args, out var errors);
+			var output = Deserialize.Arguments(args).To<Output>(out var errors);
 			Assert.AreEqual("", errors, "Did not expect any parse errors");
 			Assert.IsNull(output.output);
 			Assert.IsFalse(output.version);
@@ -73,7 +73,7 @@ namespace Tests
 		[DataRow("--input", "test-1", "--input", "test-2", "--input", "test-3")]    // Multiple arguments
 		public void Array_options_are_set_to_values(params string[] args)
 		{
-			var output = Arguments.Parse<Output>(args, out var errors);
+			var output = Deserialize.Arguments(args).To<Output>(out var errors);
 			Assert.AreEqual("", errors, "Did not expect any parse errors");
 			Assert.IsNull(output.output);
 			Assert.IsFalse(output.version);
