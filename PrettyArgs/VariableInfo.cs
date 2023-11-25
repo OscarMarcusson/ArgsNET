@@ -9,27 +9,32 @@ namespace PrettyArgs
 	internal class VariableInfo
 	{
 		readonly Type type;
+		readonly Type valueType;
 		readonly Action<object> setter;
 		List<object> list;
 
 		public bool hasSet = false;
 		public readonly bool isListType;
 
-		public VariableInfo(object instance, FieldInfo field)
+		public VariableInfo(object instance, FieldInfo field) : this(field.FieldType)
 		{
-			type = field.FieldType;
 			setter = (v) => field.SetValue(instance, v);
-			isListType = ResolveIsListType(type);
 		}
 
-		public VariableInfo(object instance, PropertyInfo property)
+		public VariableInfo(object instance, PropertyInfo property) : this(property.PropertyType)
 		{
-			type = property.PropertyType;
 			setter = (v) => property.SetValue(instance, v);
-			isListType = ResolveIsListType(type);
 		}
 
-		static bool ResolveIsListType(Type type) => typeof(IList).IsAssignableFrom(type);
+		private VariableInfo(Type type)
+		{
+			this.type = type;
+			isListType = typeof(IList).IsAssignableFrom(type);
+
+			if (type.IsArray) valueType = type.GetElementType();
+			else if (isListType) throw new NotImplementedException();
+			else valueType = type;
+		}
 
 
 		public bool Set(string value, out string error)
@@ -85,14 +90,66 @@ namespace PrettyArgs
 
 		bool TryParse(string value, out object parsed, out string error)
 		{
-			parsed = value;
 			error = default;
+			
+			if(valueType == typeof(string))
+			{
+				parsed = value;
+				return true;
+			}
+			if (valueType == typeof(char))
+			{
+				if (value.Length > 1)
+				{
+					parsed = default;
+					error = "Too many characters";
+					return false;
+				}	
+				
+				parsed = value[0];
+				return true;
+			}
 
-			//error = $"Invalid type: {variable.FieldType}";
-			//return false;
+			if (valueType == typeof(sbyte)) return ParseHelper(sbyte.Parse, value, out parsed, out error);
+			if (valueType == typeof(short)) return ParseHelper(short.Parse, value, out parsed, out error);
+			if (valueType == typeof(int)) return ParseHelper(int.Parse, value, out parsed, out error);
+			if (valueType == typeof(long)) return ParseHelper(long.Parse, value, out parsed, out error);
+			if (valueType == typeof(byte)) return ParseHelper(byte.Parse, value, out parsed, out error);
+			if (valueType == typeof(ushort)) return ParseHelper(ushort.Parse, value, out parsed, out error);
+			if (valueType == typeof(uint)) return ParseHelper(uint.Parse, value, out parsed, out error);
+			if (valueType == typeof(ulong)) return ParseHelper(ulong.Parse, value, out parsed, out error);
+			
+			if (valueType == typeof(float)) return ParseHelper(float.Parse, value, out parsed, out error);
+			if (valueType == typeof(double)) return ParseHelper(double.Parse, value, out parsed, out error);
+			if (valueType == typeof(decimal)) return ParseHelper(decimal.Parse, value, out parsed, out error);
 
-			return true;
+			if (valueType == typeof(DateTime)) return ParseHelper(DateTime.Parse, value, out parsed, out error);
+			if (valueType == typeof(DateTimeOffset)) return ParseHelper(DateTimeOffset.Parse, value, out parsed, out error);
+			if (valueType == typeof(TimeSpan)) return ParseHelper(TimeSpan.Parse, value, out parsed, out error);
+
+			parsed = default;
+			error = $"Invalid type: {valueType.Name}";
+			return false;
+
+			
 		}
+
+		bool ParseHelper<T>(Func<string, T> parser, string value, out object parsed, out string error)
+		{
+			try
+			{
+				parsed = parser(value);
+				error = default;
+				return true;
+			}
+			catch
+			{
+				parsed = default;
+				error = "Invalid value";
+				return false;
+			}
+		}
+
 
 		void SetNewValue(object value)
 		{

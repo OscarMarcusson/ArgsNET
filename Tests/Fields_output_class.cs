@@ -13,6 +13,8 @@ namespace Tests
 			Assert.AreEqual("", errors, "Did not expect any parse errors");
 			Assert.IsNull(output.output);
 			Assert.IsFalse(output.version);
+			Assert.AreEqual(0, output.age);
+			Assert.AreEqual(0m, output.money);
 		}
 
 		[TestMethod]
@@ -25,6 +27,8 @@ namespace Tests
 			Assert.IsNull(output.output);
 			Assert.IsTrue(output.version);
 			Assert.IsNull(output.inputFiles);
+			Assert.AreEqual(0, output.age);
+			Assert.AreEqual(0m, output.money);
 		}
 
 		[TestMethod]
@@ -32,13 +36,32 @@ namespace Tests
 		[DataRow("-o=test")]
 		[DataRow("--output", "test")]
 		[DataRow("--output=test")]
-		public void Options_are_set_to_value(params string[] args)
+		public void Options_strings_are_set(params string[] args)
 		{
 			var output = Arguments.Parse<Output>(args, out var errors);
 			Assert.AreEqual("", errors, "Did not expect any parse errors");
 			Assert.AreEqual("test", output.output);
 			Assert.IsFalse(output.version);
 			Assert.IsNull(output.inputFiles);
+			Assert.AreEqual(0, output.age);
+			Assert.AreEqual(0m, output.money);
+		}
+
+		[TestMethod]
+		public void Options_numbers_are_set()
+		{
+			var args = new string[]
+			{
+				"--age", "42",
+				"--money", "10.00000001"
+			};
+			var output = Arguments.Parse<Output>(args, out var errors);
+			Assert.AreEqual("", errors, "Did not expect any parse errors");
+			Assert.IsNull(output.output);
+			Assert.IsFalse(output.version);
+			Assert.IsNull(output.inputFiles);
+			Assert.AreEqual(42, output.age);
+			Assert.AreEqual(10.00000001m, output.money);
 		}
 
 		[TestMethod]
@@ -59,6 +82,8 @@ namespace Tests
 			Assert.AreEqual("test-1", output.inputFiles[0]);
 			Assert.AreEqual("test-2", output.inputFiles[1]);
 			Assert.AreEqual("test-3", output.inputFiles[2]);
+			Assert.AreEqual(0, output.age);
+			Assert.AreEqual(0m, output.money);
 		}
 
 		class Output
@@ -71,6 +96,12 @@ namespace Tests
 
 			[ArgumentName("i", "input")]
 			public string[]? inputFiles;
+
+			[ArgumentName("a", "age")]
+			public int age;
+
+			[ArgumentName("m", "money")]
+			public decimal money;
 		}
 	}
 }
