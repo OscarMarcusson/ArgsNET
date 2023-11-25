@@ -6,42 +6,52 @@ using System.Text;
 
 namespace PrettyArgs
 {
-	internal class TypeMap
+	internal class TypeMap<T> where T : class
 	{
-		readonly Dictionary<string, FieldInfo> fields = new Dictionary<string, FieldInfo>();
-		readonly Dictionary<string, PropertyInfo> properties = new Dictionary<string, PropertyInfo>();
+		readonly T instance;
+		readonly Dictionary<string, VariableInfo> variables = new Dictionary<string, VariableInfo>();
+		readonly HashSet<string> alreadySetVariables = new HashSet<string>();
 
 
-		public TypeMap(Type type)
+		public TypeMap(T instance)
 		{
-			var fields = type.GetFields(BindingFlags.Public | BindingFlags.SetField | BindingFlags.Instance);
-			var properties = type.GetProperties(BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance);
+			this.instance = instance;
+			var fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.SetField | BindingFlags.Instance);
+			var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance);
 
 			foreach(var field in fields)
 			{
 				var name = field.GetCustomAttribute<ArgumentName>();
-				var shortName = name?.shortName ?? field.Name[0].ToString();
-				var longName = name?.longName ?? field.Name;
-
-				this.fields[$"-{shortName}"] = field;
-				this.fields[$"--{longName}"] = field;
+				var info = new VariableInfo(instance, field);
+				Resolve(field.Name, name, info);
 			}
+			foreach (var property in properties)
+			{
+				var name = property.GetCustomAttribute<ArgumentName>();
+				var info = new VariableInfo(instance, property);
+				Resolve(property.Name, name, info);
+			}
+		}
+
+		void Resolve(string name, ArgumentName customNames, VariableInfo info)
+		{
+			var shortName = customNames?.shortName ?? name[0].ToString();
+			var longName = customNames?.longName ?? name;
+			variables[$"-{shortName}"] = info;
+			variables[$"--{longName}"] = info;
 		}
 
 
 		public bool Set<T>(T instance, string key, string value, out string error)
 		{
-			if(fields.TryGetValue(key, out var field))
+			if(variables.TryGetValue(key, out var variable))
 			{
-				if (field.FieldType == typeof(string))
+				if(variable.hasSet && !variable.isListType)
 				{
-					field.SetValue(instance, value);
-					error = null;
-					return true;
+					error = "Duplicate";
+					return false;
 				}
-
-				error = $"Invalid type: {field.FieldType}";
-				return false;
+				return variable.Set(value, out error);
 			}
 
 			error = "Not found";

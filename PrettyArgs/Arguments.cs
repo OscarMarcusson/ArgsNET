@@ -8,8 +8,6 @@ namespace PrettyArgs
 {
 	public static class Arguments
 	{
-		static Dictionary<Type, TypeMap> typeMaps = new Dictionary<Type, TypeMap>();
-
 		public static T ParseSystemArguments<T>(out string error) where T : class, new()
 		{
 			var args = Environment.GetCommandLineArgs();
@@ -66,8 +64,7 @@ namespace PrettyArgs
 		public static T Parse<T>(string[] arguments, out string error) where T : class, new()
 		{
 			var t = new T();
-			if(!typeMaps.TryGetValue(typeof(T), out var typeMap))
-				typeMaps[typeof(T)] = typeMap = new TypeMap(typeof(T));
+			var typeMap = new TypeMap<T>(t);
 
 			for(int i = 0; i < arguments.Length; i++)
 			{
