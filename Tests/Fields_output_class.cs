@@ -97,10 +97,10 @@ namespace Tests
 			[ArgumentName("i", "input")]
 			public string[]? inputFiles;
 
-			[ArgumentName("a", "age")]
+			// automatic "-a" / "--age"
 			public int age;
 
-			[ArgumentName("m", "money")]
+			// automatic "-m" / "--money"
 			public decimal money;
 		}
 	}

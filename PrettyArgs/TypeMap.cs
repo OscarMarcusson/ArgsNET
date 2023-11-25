@@ -35,10 +35,16 @@ namespace PrettyArgs
 
 		void Resolve(string name, ArgumentName customNames, VariableInfo info)
 		{
-			var shortName = customNames?.shortName ?? name[0].ToString();
-			var longName = customNames?.longName ?? name;
-			variables[$"-{shortName}"] = info;
-			variables[$"--{longName}"] = info;
+			var shortName = !string.IsNullOrWhiteSpace(customNames?.shortName)
+				? $"-{customNames.shortName}"
+				: $"-{name[0]}"
+				;
+			var longName = !string.IsNullOrWhiteSpace(customNames?.longName)
+				? $"--{customNames.longName}"
+				: NameResolver.ResolveLongNameFromVariableName(name)
+				;
+			variables[shortName] = info;
+			variables[longName] = info;
 		}
 
 

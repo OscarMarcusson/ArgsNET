@@ -45,9 +45,6 @@ namespace PrettyArgs
 				{
 					last = name[i];
 					output.Append(last);
-					if(last == 'e')
-					{ 
-					}
 				}
 			}
 
