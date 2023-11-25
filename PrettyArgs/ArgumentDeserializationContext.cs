@@ -28,6 +28,10 @@ namespace PrettyArgs
 			return this;
 		}
 
+		public ArgumentDeserializationContext WithCultureInfo(string culture)
+		{
+			return WithFormatProvider(CultureInfo.GetCultureInfo(culture));
+		}
 		public ArgumentDeserializationContext WithFormatProvider(IFormatProvider formatProvider)
 		{
 			if (this.formatProvider != null)
@@ -40,7 +44,11 @@ namespace PrettyArgs
 		public T To<T>(out string error) where T : class, new()
 		{
 			var t = new T();
-			var typeMap = new TypeMap<T>(t);
+			var typeMap = new TypeMap<T>(
+				t,
+				formatProvider ?? CultureInfo.InstalledUICulture,
+				numberStyles ?? NumberStyles.Any
+				);
 			var optionArgs = new List<string>();
 
 			for (int i = 0; i < arguments.Length; i++)

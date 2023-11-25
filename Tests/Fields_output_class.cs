@@ -1,3 +1,4 @@
+using System.Globalization;
 using PrettyArgs;
 
 namespace Tests
@@ -55,7 +56,7 @@ namespace Tests
 				"--age", "42",
 				"--money", "10.00000001"
 			};
-			var output = Deserialize.Arguments(args).To<Output>(out var errors);
+			var output = Deserialize.Arguments(args).WithFormatProvider(new NumberFormatInfo { NumberDecimalSeparator = "." }).To<Output>(out var errors);
 			Assert.AreEqual("", errors, "Did not expect any parse errors");
 			Assert.IsNull(output.output);
 			Assert.IsFalse(output.version);

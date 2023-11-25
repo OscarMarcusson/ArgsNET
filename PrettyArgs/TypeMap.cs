@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -13,7 +14,7 @@ namespace PrettyArgs
 		readonly HashSet<string> alreadySetVariables = new HashSet<string>();
 
 
-		public TypeMap(T instance)
+		internal TypeMap(T instance, IFormatProvider formatProvider, NumberStyles numberStyles)
 		{
 			this.instance = instance;
 			var fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.SetField | BindingFlags.Instance);
@@ -22,13 +23,13 @@ namespace PrettyArgs
 			foreach(var field in fields)
 			{
 				var name = field.GetCustomAttribute<ArgumentName>();
-				var info = new VariableInfo(instance, field);
+				var info = new VariableInfo(instance, field, formatProvider, numberStyles);
 				Resolve(field.Name, name, info);
 			}
 			foreach (var property in properties)
 			{
 				var name = property.GetCustomAttribute<ArgumentName>();
-				var info = new VariableInfo(instance, property);
+				var info = new VariableInfo(instance, property, formatProvider, numberStyles);
 				Resolve(property.Name, name, info);
 			}
 		}
