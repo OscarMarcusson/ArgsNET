@@ -34,6 +34,19 @@ namespace PrettyArgs
 
 		public bool Set(string value, out string error)
 		{
+			if(type == typeof(bool))
+			{
+				if(!string.IsNullOrWhiteSpace(value))
+				{
+					error = "Did not expect a value";
+					return false;
+				}
+				
+				SetNewValue(true);
+				error = default;
+				return true;
+			}
+
 			if (type.IsArray)
 			{
 				if (!TryParse(value, out var parsed, out error))
