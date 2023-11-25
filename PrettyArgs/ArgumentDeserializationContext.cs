@@ -66,7 +66,7 @@ namespace PrettyArgs
 				// Empty values may be set intentionally, for some reason, so special handling for it
 				if (value == "\"\"")
 				{
-					if (!typeMap.Set(t, key, "", out error))
+					if (!typeMap.Set(key, "", out error))
 						return t;
 				}
 				// Options
@@ -74,14 +74,14 @@ namespace PrettyArgs
 				{
 					foreach (var split in optionArgs)
 					{
-						if (!typeMap.Set(t, key, split, out error))
+						if (!typeMap.Set(key, split, out error))
 							return t;
 					}
 				}
 				// Flag
 				else
 				{
-					if (!typeMap.Set(t, key, null, out error))
+					if (!typeMap.Set(key, null, out error))
 						return t;
 				}
 			}

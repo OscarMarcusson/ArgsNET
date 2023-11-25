@@ -48,7 +48,7 @@ namespace PrettyArgs
 		}
 
 
-		public bool Set<T>(T instance, string key, string value, out string error)
+		public bool Set(string key, string value, out string error)
 		{
 			if(variables.TryGetValue(key, out var variable))
 			{
