@@ -10,7 +10,7 @@ namespace Tests
 		{
 			var args = Array.Empty<string>();
 			_ = Arguments.Parse<Empty>(args, out var errors);
-			Assert.AreEqual(0, errors.Length, "Did not expect any parse errors");
+			Assert.AreEqual("", errors, "Did not expect any parse errors");
 		}
 
 		[TestMethod]
@@ -21,7 +21,8 @@ namespace Tests
 		public void Flags_return_error(params string[] args)
 		{
 			_ = Arguments.Parse<Empty>(args, out var errors);
-			Assert.AreEqual(1, errors.Length, "Expected one error");
+			Assert.IsTrue(errors.Length > 0, "Expected an error");
+			Assert.IsTrue(errors.Contains("not found", StringComparison.OrdinalIgnoreCase));
 		}
 
 		[TestMethod]
@@ -32,7 +33,8 @@ namespace Tests
 		public void Options_return_error(params string[] args)
 		{
 			_ = Arguments.Parse<Empty>(args, out var errors);
-			Assert.AreEqual(1, errors.Length, "Expected one error");
+			Assert.IsTrue(errors.Length > 0, "Expected an error");
+			Assert.IsTrue(errors.Contains("not found", StringComparison.OrdinalIgnoreCase));
 		}
 
 		class Empty { }
