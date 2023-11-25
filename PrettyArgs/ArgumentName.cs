@@ -21,7 +21,7 @@ namespace PrettyArgs
 			if (longName[0] == '-') throw new ArgumentException(hyphenAtStartErrlor, nameof(longName));
 
 			this.longName = longName;
-			shortName = longName[0].ToString();
+			shortName = NameResolver.ResolveShortNameFromLongName(longName).Substring(1);
 			for(int i = 1; i < longName.Length; i++)
 			{
 				if (longName[i] == '-' && i + 1 < longName.Length) 
