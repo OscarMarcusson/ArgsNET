@@ -3,20 +3,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace PrettyArgs
 {
 	internal class TypeMap<T> where T : class
 	{
-		readonly T instance;
 		readonly Dictionary<string, VariableInfo> variables = new Dictionary<string, VariableInfo>();
-		readonly HashSet<string> alreadySetVariables = new HashSet<string>();
 
 
 		internal TypeMap(T instance, IFormatProvider formatProvider, NumberStyles numberStyles)
 		{
-			this.instance = instance;
 			var fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.SetField | BindingFlags.Instance);
 			var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.SetProperty | BindingFlags.Instance);
 
