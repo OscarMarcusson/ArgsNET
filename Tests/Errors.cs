@@ -11,7 +11,7 @@ namespace Tests
 			var args = new[] { "-v" };
 			_ = Deserialize.Arguments(args).To<Output>(out var errors);
 			Assert.IsNotNull(errors, "Expected an error");
-			Assert.AreEqual(errors.error, ArgumentErrorType.NotFound);
+			Assert.AreEqual(ArgumentErrorType.NotFound, errors.error);
 		}
 
 		[TestMethod]
@@ -20,7 +20,7 @@ namespace Tests
 			var args = new[] { "-i", "value" };
 			_ = Deserialize.Arguments(args).To<Output>(out var errors);
 			Assert.IsNotNull(errors, "Expected an error");
-			Assert.AreEqual(errors.error, ArgumentErrorType.NotFound);
+			Assert.AreEqual(ArgumentErrorType.NotFound, errors.error);
 		}
 
 		[TestMethod]
@@ -31,7 +31,7 @@ namespace Tests
 		{
 			_ = Deserialize.Arguments(args).To<Output>(out var errors);
 			Assert.IsNotNull(errors, "Expected an error");
-			Assert.AreEqual(errors.error, ArgumentErrorType.Duplicate);
+			Assert.AreEqual(ArgumentErrorType.Duplicate, errors.error);
 			Assert.AreEqual(errorIndex, errors.index);
 			Assert.AreEqual("-o", errors.shortName);
 			Assert.AreEqual("--option", errors.longName);
