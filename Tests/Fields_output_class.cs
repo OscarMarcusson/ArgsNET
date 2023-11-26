@@ -11,7 +11,7 @@ namespace Tests
 		{
 			var args = Array.Empty<string>();
 			var output = Deserialize.Arguments(args).To<Output>(out var errors);
-			Assert.AreEqual("", errors, "Did not expect any parse errors");
+			Assert.IsNull(errors, "Did not expect any parse errors");
 			Assert.IsNull(output.output);
 			Assert.IsFalse(output.version);
 			Assert.AreEqual(0, output.age);
@@ -24,7 +24,7 @@ namespace Tests
 		public void Flags_are_set_to_true(params string[] args)
 		{
 			var output = Deserialize.Arguments(args).To<Output>(out var errors);
-			Assert.AreEqual("", errors, "Did not expect any parse errors");
+			Assert.IsNull(errors, "Did not expect any parse errors");
 			Assert.IsNull(output.output);
 			Assert.IsTrue(output.version);
 			Assert.IsNull(output.inputFiles);
@@ -40,7 +40,7 @@ namespace Tests
 		public void Options_strings_are_set(params string[] args)
 		{
 			var output = Deserialize.Arguments(args).To<Output>(out var errors);
-			Assert.AreEqual("", errors, "Did not expect any parse errors");
+			Assert.IsNull(errors, "Did not expect any parse errors");
 			Assert.AreEqual("test", output.output);
 			Assert.IsFalse(output.version);
 			Assert.IsNull(output.inputFiles);
@@ -57,7 +57,7 @@ namespace Tests
 				"--money", "10.00000001"
 			};
 			var output = Deserialize.Arguments(args).WithFormatProvider(new NumberFormatInfo { NumberDecimalSeparator = "." }).To<Output>(out var errors);
-			Assert.AreEqual("", errors, "Did not expect any parse errors");
+			Assert.IsNull(errors, "Did not expect any parse errors");
 			Assert.IsNull(output.output);
 			Assert.IsFalse(output.version);
 			Assert.IsNull(output.inputFiles);
@@ -75,7 +75,7 @@ namespace Tests
 		public void Array_options_are_set_to_values(params string[] args)
 		{
 			var output = Deserialize.Arguments(args).To<Output>(out var errors);
-			Assert.AreEqual("", errors, "Did not expect any parse errors");
+			Assert.IsNull(errors, "Did not expect any parse errors");
 			Assert.IsNull(output.output);
 			Assert.IsFalse(output.version);
 			Assert.IsNotNull(output.inputFiles);

@@ -9,7 +9,7 @@ namespace ArgsNET
 	internal class TypeMap<T> where T : class
 	{
 		readonly Dictionary<string, VariableInfo> variables = new Dictionary<string, VariableInfo>();
-
+		readonly Dictionary<string, string> longShortMap = new Dictionary<string, string>();
 
 		internal TypeMap(T instance, IFormatProvider formatProvider, NumberStyles numberStyles)
 		{
@@ -19,13 +19,13 @@ namespace ArgsNET
 			foreach(var field in fields)
 			{
 				var name = field.GetCustomAttribute<ArgumentName>();
-				var info = new VariableInfo(instance, field, formatProvider, numberStyles);
+				var info = new VariableInfo((v) => field.SetValue(instance, v), field.FieldType, formatProvider, numberStyles);
 				Resolve(field.Name, name, info);
 			}
 			foreach (var property in properties)
 			{
 				var name = property.GetCustomAttribute<ArgumentName>();
-				var info = new VariableInfo(instance, property, formatProvider, numberStyles);
+				var info = new VariableInfo((v) => property.SetValue(instance, v), property.PropertyType, formatProvider, numberStyles);
 				Resolve(property.Name, name, info);
 			}
 		}
@@ -42,23 +42,45 @@ namespace ArgsNET
 				;
 			variables[shortName] = info;
 			variables[longName] = info;
+			longShortMap[shortName] = longName;
+			longShortMap[longName] = shortName;
 		}
 
 
-		public bool Set(string key, string value, out string error)
+		public bool Set(string key, string value, out ArgumentErrorType error)
 		{
 			if(variables.TryGetValue(key, out var variable))
 			{
-				if(variable.hasSet && !variable.isListType)
-				{
-					error = "Duplicate";
-					return false;
-				}
 				return variable.Set(value, out error);
 			}
 
-			error = "Not found";
+			error = ArgumentErrorType.NotFound;
 			return false;
+		}
+
+		internal void ResolveInformation(string key, out string shortName, out string longName, out Type type, out Type elementType)
+		{
+			if(!variables.TryGetValue(key, out var variable))
+			{
+				shortName = null;
+				longName = null;
+				type = null;
+				elementType = null;
+				return;
+			}
+
+			if (key.StartsWith("--"))
+			{
+				longName = key;
+				shortName = longShortMap[key];
+			}
+			else
+			{
+				longName = longShortMap[key];
+				shortName = key;
+			}
+			type = variable.type;
+			elementType = variable.valueType;
 		}
 	}
 }

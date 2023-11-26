@@ -40,7 +40,7 @@ namespace ArgsNET
 			return this;
 		}
 
-		public T To<T>(out string error) where T : class, new()
+		public T To<T>(out ArgumentError error) where T : class, new()
 		{
 			var t = new T();
 			var typeMap = new TypeMap<T>(
@@ -53,7 +53,8 @@ namespace ArgsNET
 			for (int i = 0; i < arguments.Length; i++)
 			{
 				optionArgs.Clear();
-				string key = arguments[i];
+				var keyIndex = i;
+				string key = arguments[keyIndex];
 				string value = null;
 
 				var assignmentIndex = key.IndexOf('=');
@@ -73,7 +74,7 @@ namespace ArgsNET
 				// Empty values may be set intentionally, for some reason, so special handling for it
 				if (value == "\"\"")
 				{
-					if (!typeMap.Set(key, "", out error))
+					if (!TrySet(typeMap, key, "", i, keyIndex, false, out error))
 						return t;
 				}
 				// Options
@@ -81,22 +82,38 @@ namespace ArgsNET
 				{
 					foreach (var split in optionArgs)
 					{
-						if (!typeMap.Set(key, split, out error))
+						if (!TrySet(typeMap, key, split, i, keyIndex, optionArgs.Count > 1, out error))
 							return t;
 					}
 				}
 				// Flag
 				else
 				{
-					if (!typeMap.Set(key, null, out error))
+					if (!TrySet(typeMap, key, null, i, keyIndex, false, out error))
 						return t;
 				}
 			}
 
-			error = string.Empty;
+			error = default;
 			return t;
 		}
 
+		// Setter wrapper
+		bool TrySet<T>(TypeMap<T> typeMap, string key, string value, int index, int keyIndex, bool isMultipleArgs, out ArgumentError error) where T : class
+		{
+			if (!typeMap.Set(key, value, out var errorType))
+			{
+				var errorIndex = errorType == ArgumentErrorType.Duplicate && !isMultipleArgs ? keyIndex : index;
+				typeMap.ResolveInformation(key, out var shortName, out var longName, out var type, out var elementType);
+				error = new ArgumentError(arguments, errorIndex, shortName, longName, errorType, type, elementType);
+				return false;
+			}
+			else
+			{
+				error = default;
+				return true;
+			}
+		}
 
 		static void Split(List<string> builder, string value)
 		{

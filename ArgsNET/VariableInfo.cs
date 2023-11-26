@@ -8,8 +8,8 @@ namespace ArgsNET
 {
 	internal class VariableInfo
 	{
-		readonly Type type;
-		readonly Type valueType;
+		internal readonly Type type;
+		internal readonly Type valueType;
 		readonly Action<object> setter;
 		readonly IFormatProvider formatProvider;
 		readonly NumberStyles numberStyles;
@@ -18,20 +18,9 @@ namespace ArgsNET
 		public bool hasSet = false;
 		public readonly bool isListType;
 
-		public VariableInfo(object instance, FieldInfo field, IFormatProvider formatProvider, NumberStyles numberStyles)
-			: this(field.FieldType, formatProvider, numberStyles)
+		internal VariableInfo(Action<object> setter, Type type, IFormatProvider formatProvider, NumberStyles numberStyles)
 		{
-			setter = (v) => field.SetValue(instance, v);
-		}
-
-		public VariableInfo(object instance, PropertyInfo property, IFormatProvider formatProvider, NumberStyles numberStyles)
-			: this(property.PropertyType, formatProvider, numberStyles)
-		{
-			setter = (v) => property.SetValue(instance, v);
-		}
-
-		private VariableInfo(Type type, IFormatProvider formatProvider, NumberStyles numberStyles)
-		{
+			this.setter = setter;
 			this.type = type;
 			isListType = typeof(IList).IsAssignableFrom(type);
 			this.formatProvider = formatProvider;
@@ -43,18 +32,24 @@ namespace ArgsNET
 		}
 
 
-		public bool Set(string value, out string error)
+		public bool Set(string value, out ArgumentErrorType error)
 		{
+			if(hasSet && !isListType)
+			{
+				error = ArgumentErrorType.Duplicate;
+				return false;
+			}
+
 			if(type == typeof(bool))
 			{
 				if(!string.IsNullOrWhiteSpace(value))
 				{
-					error = "Did not expect a value";
+					error = ArgumentErrorType.FlagReceivedValue;
 					return false;
 				}
 				
 				SetNewValue(true);
-				error = default;
+				error = ArgumentErrorType.None;
 				return true;
 			}
 
@@ -94,9 +89,9 @@ namespace ArgsNET
 			}
 		}
 
-		bool TryParse(string value, out object parsed, out string error)
+		bool TryParse(string value, out object parsed, out ArgumentErrorType error)
 		{
-			error = default;
+			error = ArgumentErrorType.None;
 			
 			if(valueType == typeof(string))
 			{
@@ -108,7 +103,7 @@ namespace ArgsNET
 				if (value.Length > 1)
 				{
 					parsed = default;
-					error = "Too many characters";
+					error = ArgumentErrorType.InvalidValue;
 					return false;
 				}	
 				
@@ -134,24 +129,24 @@ namespace ArgsNET
 			if (valueType == typeof(TimeSpan)) return ParseHelper(() => TimeSpan.Parse(value, formatProvider), out parsed, out error);
 
 			parsed = default;
-			error = $"Invalid type: {valueType.Name}";
+			error = ArgumentErrorType.TypeNotSupported;
 			return false;
 
 			
 		}
 
-		bool ParseHelper<T>(Func<T> parser, out object parsed, out string error)
+		bool ParseHelper<T>(Func<T> parser, out object parsed, out ArgumentErrorType error)
 		{
 			try
 			{
 				parsed = parser();
-				error = default;
+				error = ArgumentErrorType.None;
 				return true;
 			}
 			catch
 			{
 				parsed = default;
-				error = "Invalid value";
+				error = ArgumentErrorType.InvalidValue;
 				return false;
 			}
 		}
