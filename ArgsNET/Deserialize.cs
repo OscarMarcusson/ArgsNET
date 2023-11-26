@@ -7,13 +7,13 @@ namespace ArgsNET
 {
 	public static class Deserialize
 	{
-		public static ArgumentDeserializationContext SystemArguments<T>() where T : class, new()
+		public static ArgumentDeserializationContext SystemArguments()
 		{
 			var args = Environment.GetCommandLineArgs();
 			return Arguments(args);
 		}
 
-		public static ArgumentDeserializationContext String<T>(string rawArgumentString) where T : class, new()
+		public static ArgumentDeserializationContext String(string rawArgumentString)
 		{
 			var tokens = new List<string>();
 			var builder = new StringBuilder(rawArgumentString.Length);
