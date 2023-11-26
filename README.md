@@ -12,13 +12,15 @@ This assumes we have a class along the lines of this:
 class Arguments
 {
     public bool help;
-    public string input;
+    public string[] input;
+    public string output;
 }
 ```
 
 The above would be able to parse any of the following automatically:
 
-| Variable          | CLI arguments    | Accepts value          |
-| ----------------- | ---------------- | ---------------------- |
-| `Arguments.help`  | `-h` / `--help`  | No                     |
-| `Arguments.input` | `-i` / `--input` | Yes, like `-i example` |
+| Variable           | CLI arguments     | Accepts value                                |
+| ------------------ | ----------------- | -------------------------------------------- |
+| `Arguments.help`   | `-h` / `--help`   | No                                           |
+| `Arguments.input`  | `-i` / `--input`  | Yes, like `-i index.html index.js index.css` |
+| `Arguments.output` | `-o` / `--output` | Yes, like `-o build/index.html`              |
