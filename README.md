@@ -25,8 +25,6 @@ The above would be able to parse any of the following automatically:
 | `Arguments.input`  | `-i` / `--input`  | Yes, like `-i index.html index.js index.css` |
 | `Arguments.output` | `-o` / `--output` | Yes, like `-o build/index.html`              |
 
-<br/>
-
 ## Detailed information
 
 ### Flags
@@ -44,3 +42,46 @@ All non-booleans are understood as options. These may accept one or multiple val
 | Space separated    | `-i value1 value2 value3`           |
 | Comma separated    | `-i=value1,value2,value3`           |
 | Multiple arguments | `-i value1` `-i value2` `-i value3` |
+
+### Argument names
+
+If nothing else is specified the argument names are resolved by using the field or property name into a long and short version. The long names are resolved first, and will be formatted as this:
+
+| Variable name      | Argument name           |
+| ------------------ | ----------------------- |
+| example            | --example               |
+| FieldExample       | --field-example         |
+| PropertyExample    | --property-example      |
+| nameWith123Numbers | --name-with-123-numbers |
+
+The short name, meanwhile, is resolved by using the long name above and trimming it to only use the first letter of each section, like this:
+
+| Long name               | Short name |
+| ----------------------- | ---------- |
+| --example               | -e         |
+| --really-verbose-name   | -rvn       |
+| --name-with-123-numbers | -nw1n      |
+
+#### Custom argument names
+
+It is possible to define custom names, instead of using the automatic name resolver by using the `ArgumentName` attribute:
+
+```csharp
+[ArgumentName("o", "output")]
+public string output;
+
+[ArgumentName("r", "hot-reload")]
+public bool hotReload;
+```
+
+Note that we do not add any hyphens at the start of the name. Those will be added automatically.
+
+It is also possible to only set the long argument, and have the short one be automatically generated:
+
+```csharp
+[ArgumentName("output")] // Short = "-o"
+public string output;
+
+[ArgumentName("hot-reload")] // Short = "-hr"
+public bool hotReload;
+```
