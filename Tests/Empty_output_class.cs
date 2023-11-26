@@ -1,4 +1,4 @@
-using PrettyArgs;
+using ArgsNET;
 
 namespace Tests
 {

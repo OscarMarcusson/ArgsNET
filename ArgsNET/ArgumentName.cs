@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PrettyArgs
+namespace ArgsNET
 {
 	/// <summary>
 	///		A custom name for the argument.

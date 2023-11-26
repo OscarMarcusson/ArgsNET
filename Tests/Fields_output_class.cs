@@ -1,5 +1,5 @@
 using System.Globalization;
-using PrettyArgs;
+using ArgsNET;
 
 namespace Tests
 {

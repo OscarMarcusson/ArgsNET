@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 
-namespace PrettyArgs
+namespace ArgsNET
 {
 	internal class VariableInfo
 	{

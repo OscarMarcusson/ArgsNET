@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 
-namespace PrettyArgs
+namespace ArgsNET
 {
 	internal class TypeMap<T> where T : class
 	{

@@ -4,7 +4,7 @@ using System.Text;
 using System.Runtime.CompilerServices;
 
 [assembly:InternalsVisibleTo("Tests")]
-namespace PrettyArgs
+namespace ArgsNET
 {
 	internal static class NameResolver
 	{
