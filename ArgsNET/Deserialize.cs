@@ -10,7 +10,7 @@ namespace ArgsNET
 		public static ArgumentDeserializationContext SystemArguments()
 		{
 			var args = Environment.GetCommandLineArgs();
-			return Arguments(args);
+			return Arguments(args.Skip(1).ToArray());
 		}
 
 		public static ArgumentDeserializationContext String(string rawArgumentString)

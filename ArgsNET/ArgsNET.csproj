@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>ArgsNET</Title>
     <Authors>Oscar_Marcusson</Authors>
+		<Version>1.0.1</Version>
     <Description>A .NET command line argument parser. It can be used without any configuration, as long as you have a class that can receive the data. 
 
 Get started by calling `ArgsNET.Deserialize`</Description>
