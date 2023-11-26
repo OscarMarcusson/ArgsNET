@@ -39,6 +39,20 @@ namespace Tests
 			Assert.IsNull(errors.elementType);
 		}
 
+		[TestMethod]
+		public void Duplicate_flags()
+		{
+			var args = new[] { "-f", "-f" };
+			_ = Deserialize.Arguments(args).To<Output>(out var errors);
+			Assert.IsNotNull(errors, "Expected an error");
+			Assert.AreEqual(ArgumentErrorType.Duplicate, errors.error);
+			Assert.AreEqual(1, errors.index);
+			Assert.AreEqual("-f", errors.shortName);
+			Assert.AreEqual("--flag", errors.longName);
+			Assert.AreEqual(typeof(bool), errors.type);
+			Assert.IsNull(errors.elementType);
+		}
+
 		class Output
 		{
 			public string? option;
