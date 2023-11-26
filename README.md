@@ -90,10 +90,10 @@ public bool hotReload;
 
 There are three ways to deserialize arguments:
 
-| Method          | Example                                              | Description                                 |
-| --------------- | ---------------------------------------------------- | ------------------------------------------- |
-| SystemArguments | `Deserialize.SystemArguments()`                      | Uses the arguments given to the application |
-| String          | `Deserialize.String("-o example.txt")`               | Uses a raw string                           |
-| Arguments       | `Deserialize.Arguments(new []{ "-o", "example.txt")` | Uses a string array                         |
+| Method          | Example                                | Description                                 |
+| --------------- | -------------------------------------- | ------------------------------------------- |
+| SystemArguments | `Deserialize.SystemArguments()`        | Uses the arguments given to the application |
+| String          | `Deserialize.String("-o example.txt")` | Uses a raw string                           |
+| Arguments       | `Deserialize.Arguments(someArgs)`      | Uses a string array                         |
 
 In most cases the regular `SystemArguments` method will suffice, but in some cases you have different handling depending on the first argument, like `npm install` or `git switch`, where the first argument is not a flag. In these cases it's recommended to implement a switch on the first argument, and then use the `Arguments` method with the something like `Deserialize.Arguments(args.Skip(1).ToArray())`.
